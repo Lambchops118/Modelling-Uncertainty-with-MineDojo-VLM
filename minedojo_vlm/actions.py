@@ -14,6 +14,7 @@ class AgentAction(str, Enum):
     MOVE_BACKWARD = "MOVE_BACKWARD"
     STRAFE_LEFT = "STRAFE_LEFT"
     STRAFE_RIGHT = "STRAFE_RIGHT"
+    SPRINT_FORWARD = "SPRINT_FORWARD"
     TURN_LEFT = "TURN_LEFT"
     TURN_RIGHT = "TURN_RIGHT"
     LOOK_UP = "LOOK_UP"
@@ -46,6 +47,9 @@ ACTION_CONFIGURERS: Dict[AgentAction, Callable[[np.ndarray], None]] = {
     AgentAction.MOVE_BACKWARD: _set(0, 2),
     AgentAction.STRAFE_LEFT: _set(1, 1),
     AgentAction.STRAFE_RIGHT: _set(1, 2),
+    AgentAction.SPRINT_FORWARD: lambda action: (
+        action.__setitem__(0, 1), action.__setitem__(2, 3)
+    ),
     AgentAction.TURN_LEFT: _offset(4, -1),
     AgentAction.TURN_RIGHT: _offset(4, 1),
     AgentAction.LOOK_UP: _offset(3, -1),
@@ -59,10 +63,11 @@ ACTION_CONFIGURERS: Dict[AgentAction, Callable[[np.ndarray], None]] = {
 
 
 ACTION_DURATION_LIMITS: Dict[AgentAction, Tuple[int, int]] = {
-    AgentAction.MOVE_FORWARD: (1, 8),
-    AgentAction.MOVE_BACKWARD: (1, 8),
-    AgentAction.STRAFE_LEFT: (1, 8),
-    AgentAction.STRAFE_RIGHT: (1, 8),
+    AgentAction.MOVE_FORWARD: (1, 20),
+    AgentAction.MOVE_BACKWARD: (1, 20),
+    AgentAction.STRAFE_LEFT: (1, 20),
+    AgentAction.STRAFE_RIGHT: (1, 20),
+    AgentAction.SPRINT_FORWARD: (2, 30),
     AgentAction.TURN_LEFT: (1, 18),
     AgentAction.TURN_RIGHT: (1, 18),
     AgentAction.LOOK_UP: (1, 12),

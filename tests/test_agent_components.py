@@ -7,6 +7,7 @@ import numpy as np
 from minedojo_vlm.actions import AgentAction, execute_action
 from minedojo_vlm.observations import encode_rgb_as_png_data_url, rgb_to_image
 from minedojo_vlm.openai_agent import ActionDecision
+from minedojo_vlm.navigation_memory import Area, NavigationMemory
 
 
 class FakeActionSpace:
@@ -38,10 +39,24 @@ class AgentComponentTests(unittest.TestCase):
             ActionDecision(
                 observation="Open ground ahead.",
                 rationale="Move forward.",
+                current_area=Area.CORRIDOR,
+                crosshair_on_chest=False,
+                target_chest_room=Area.UNKNOWN,
+                previous_break_succeeded=False,
                 action=AgentAction.MOVE_FORWARD,
                 duration=101,
                 confidence="high",
             )
+
+    def test_navigation_memory_persists_checked_rooms(self):
+        memory = NavigationMemory()
+        memory.observe(Area.RED_ROOM)
+        memory.mark_chest_checked(Area.RED_ROOM)
+        memory.observe(Area.BLUE_ROOM)
+
+        self.assertTrue(memory.rooms[Area.RED_ROOM].chest_checked)
+        self.assertTrue(memory.rooms[Area.BLUE_ROOM].visited)
+        self.assertIn("YELLOW_ROOM", memory.prompt_text())
 
     def test_turn_right_translation(self):
         env = FakeEnv()

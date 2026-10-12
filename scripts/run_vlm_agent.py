@@ -20,6 +20,7 @@ if str(PROJECT_ROOT) not in sys.path:
 import minedojo
 
 from minedojo_vlm.actions import AgentAction, execute_action
+from minedojo_vlm.navigation_memory import Area, NavigationMemory
 from minedojo_vlm.observations import encode_rgb_as_png_data_url, save_png
 from minedojo_vlm.openai_agent import OpenAIVisionAgent
 
@@ -69,6 +70,38 @@ def inventory_quantity(observation, target_item: str) -> int:
         if normalized_name == normalized_target:
             total += int(quantity)
     return total
+
+
+def inventory_status(observation) -> str:
+    """Describe non-empty inventory and the selected first hotbar slot."""
+    inventory = observation.get("inventory", {})
+    names = list(inventory.get("name", []))
+    quantities = list(inventory.get("quantity", []))
+    items = []
+    for name, quantity in zip(names, quantities):
+        normalized_name = str(name).replace("minecraft:", "").replace("_", " ")
+        quantity = int(quantity)
+        if normalized_name != "air" and quantity > 0:
+            items.append(f"{normalized_name} x{quantity}")
+    held_item = "empty hand"
+    equipment = observation.get("equipment", {})
+    equipment_names = list(equipment.get("name", []))
+    equipment_quantities = list(equipment.get("quantity", []))
+    if equipment_names:
+        mainhand = str(equipment_names[0]).replace("minecraft:", "").replace("_", " ")
+        if mainhand != "air" and int(equipment_quantities[0]) > 0:
+            held_item = mainhand
+    elif names:
+        # Older MineDojo builds may omit the equipment observation. Slot zero is
+        # the best available approximation in that case.
+        slot_zero = str(names[0]).replace("minecraft:", "").replace("_", " ")
+        if slot_zero != "air" and int(quantities[0]) > 0:
+            held_item = slot_zero
+    contents = ", ".join(items) if items else "empty"
+    return (
+        f"Held item rendered at lower-right: {held_item}. "
+        f"Non-empty inventory: {contents}."
+    )
 
 
 def parse_args() -> argparse.Namespace:
@@ -177,6 +210,9 @@ def main() -> None:
         reasoning_effort=args.reasoning_effort,
     )
     history = []
+    action_history = []
+    navigation_memory = NavigationMemory()
+    pending_break_room = None
     env = minedojo.make(
         task_id="open-ended",
         image_size=(360, 640),
@@ -206,6 +242,7 @@ def main() -> None:
                 f"Agent started with {target_quantity} {args.target_item}; "
                 "the objective would already be complete"
             )
+        termination_reason = "decision_budget_exhausted"
         for decision_index in range(args.max_decisions):
             image_data_url, png_bytes = encode_rgb_as_png_data_url(
                 observation["rgb"]
@@ -216,14 +253,46 @@ def main() -> None:
             started = time.monotonic()
             objective_status = (
                 f"Inventory contains {target_quantity} {args.target_item}. "
-                "Success requires at least 1."
+                f"Success requires at least 1. {inventory_status(observation)}"
             )
+            if pending_break_room is not None:
+                objective_status += (
+                    f" Verification is pending for an attempted "
+                    f"{pending_break_room.value} chest break. Inspect whether that "
+                    "chest block is visibly gone and report previous_break_succeeded."
+                )
+            else:
+                objective_status += " No chest break is awaiting verification."
+            memory_text = navigation_memory.prompt_text()
+            recent_turns = action_history[-3:]
+            if len(recent_turns) == 3 and all(
+                action in {AgentAction.TURN_LEFT, AgentAction.TURN_RIGHT}
+                for action in recent_turns
+            ):
+                memory_text += (
+                    "\n- LOOP_ALERT: three consecutive turn actions made no navigational "
+                    "progress. Do not chase an object at the lower-right edge; it is the "
+                    "held item. Look toward the center of the scene or leave this room."
+                )
             decision, response = agent.decide(
                 image_data_url,
                 args.task,
                 history,
                 objective_status=objective_status,
+                navigation_memory=memory_text,
             )
+            if pending_break_room is not None:
+                if decision.previous_break_succeeded:
+                    navigation_memory.mark_chest_checked(pending_break_room)
+                    print(f"[MEMORY] Confirmed {pending_break_room.value} chest destroyed")
+                else:
+                    print(
+                        f"[MEMORY] {pending_break_room.value} chest destruction was not "
+                        "confirmed; room remains unchecked"
+                    )
+                pending_break_room = None
+            navigation_memory.observe(decision.current_area)
+            action_history.append(decision.action)
             latency = time.monotonic() - started
             print(
                 f"[DECISION {decision_index:02d}] {decision.action.value} "
@@ -243,22 +312,45 @@ def main() -> None:
                 "latency_seconds": round(latency, 6),
                 "decision": decision.model_dump(mode="json"),
                 "objective_status": objective_status,
+                "navigation_memory": navigation_memory.model_dump(mode="json"),
                 "usage": serialize_usage(response),
             }
             append_jsonl(events_path, record)
 
-            history.append(
-                f"Step {decision_index}: saw {decision.observation}; "
-                f"chose {decision.action.value} x{decision.duration}."
-            )
             if decision.action == AgentAction.STOP:
                 print("[INFO] Model selected STOP")
+                termination_reason = "model_stop"
                 break
+
+            executed_action = decision.action
+            executed_duration = decision.duration
+            if decision.action == AgentAction.BREAK_BLOCK and decision.crosshair_on_chest:
+                if decision.target_chest_room == Area.UNKNOWN:
+                    executed_action = AgentAction.WAIT
+                    executed_duration = 1
+                    print("[GUARD] Chest room is unknown; refusing untracked break")
+                elif decision.current_area != decision.target_chest_room:
+                    executed_action = AgentAction.MOVE_FORWARD
+                    executed_duration = 6
+                    print(
+                        f"[GUARD] Chest is in {decision.target_chest_room.value} but agent "
+                        f"is in {decision.current_area.value}; approaching before breaking"
+                    )
+                else:
+                    executed_duration = 100
+                    pending_break_room = decision.target_chest_room
+
+            history.append(
+                f"Step {decision_index}: area={decision.current_area.value}; "
+                f"saw {decision.observation}; requested {decision.action.value} "
+                f"x{decision.duration}; executed {executed_action.value} "
+                f"x{executed_duration}."
+            )
 
             transition = execute_action(
                 env,
-                decision.action,
-                decision.duration,
+                executed_action,
+                executed_duration,
                 step_delay=args.action_step_delay,
             )
             if transition is None:
@@ -277,6 +369,16 @@ def main() -> None:
                     "target_item": args.target_item,
                     "target_quantity": target_quantity,
                     "success": success,
+                    "requested_action": decision.action.value,
+                    "requested_duration": decision.duration,
+                    "executed_action": executed_action.value,
+                    "executed_duration": executed_duration,
+                    "pending_break_room": (
+                        pending_break_room.value
+                        if pending_break_room is not None
+                        else None
+                    ),
+                    "navigation_memory": navigation_memory.model_dump(mode="json"),
                 },
             )
             if success:
@@ -284,10 +386,23 @@ def main() -> None:
                     f"[SUCCESS] Collected {target_quantity} {args.target_item}; "
                     "objective verified from inventory"
                 )
+                termination_reason = "success"
                 break
             if done:
                 print("[INFO] MineDojo episode ended")
+                termination_reason = "environment_done"
                 break
+        append_jsonl(
+            events_path,
+            {
+                "event": "termination",
+                "timestamp": utc_timestamp(),
+                "reason": termination_reason,
+                "target_item": args.target_item,
+                "target_quantity": target_quantity,
+                "navigation_memory": navigation_memory.model_dump(mode="json"),
+            },
+        )
     finally:
         env.close()
         print("[INFO] MineDojo closed cleanly")
