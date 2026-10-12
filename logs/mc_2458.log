@@ -1,0 +1,253 @@
+[14:08:58] [EnvServerSocketHandler/INFO]: [STDOUT]: Received from localhost:<MissionInit xmlns="http://ProjectMalmo.microsoft.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" SchemaVersion="" PlatformVersion="0.37.0">
+    <Mission xmlns="http://ProjectMalmo.microsoft.com">
+        <About>
+            <Summary>HarvestMeta</Summary>
+        </About>
+
+        <ModSettings>
+            <MsPerTick>50</MsPerTick>
+        </ModSettings>
+
+        <ServerSection>
+            <ServerInitialConditions>
+                <!-- Initial Conditions -->
+
+                
+                <Time>
+                   
+                   <AllowPassageOfTime>true</AllowPassageOfTime>
+                </Time>
+
+                
+                <AllowSpawning>true</AllowSpawning>
+
+                
+
+            </ServerInitialConditions>
+            <ServerHandlers>
+
+                
+                <DefaultWorldGenerator forceReset="false" seed="" generatorOptions="{}"/>
+
+                
+
+                
+
+                
+
+
+            </ServerHandlers>
+        </ServerSection>
+
+
+        
+        <AgentSection mode="Survival">
+            <Name>MineDojoAgent0</Name>
+
+            <AgentStart>
+
+                
+                <LowLevelInputs>true</LowLevelInputs>
+
+                
+                <BreakSpeedMultiplier>1.0</BreakSpeedMultiplier>
+
+                
+                <StartingHealth maxHealth="20" health="20.0"/>
+
+                
+                <StartingFood food="20"/>
+
+                
+                <Inventory>
+            
+                <InventoryObject slot="0" type="shears" metadata="0" quantity="1"/>
+            
+            </Inventory>
+
+                
+
+            </AgentStart>
+            <AgentHandlers>
+                <!-- These area  bit of boilerplate that
+                 we always expect to be included ... -->
+                <FileBasedPerformanceProducer/>
+                <ObservationFromDamage/>
+                <PauseCommand/>
+
+                <!--  Observations     -->
+
+                
+                <VideoProducer want_depth="false">
+                <Width>640 </Width>
+                <Height>360</Height>
+            </VideoProducer>
+
+                
+                <ObservationFromFullInventory flat="false"/>
+
+                
+                <ObservationFromFullStats/>
+
+                
+                <ObservationFromGrid>                      
+                <Grid name="voxels">                        
+                    <min x="-1" y="-1" z="-1"/>                        
+                    <max x="1" y="1" z="1"/>                      
+                </Grid>                  
+            </ObservationFromGrid>
+
+                
+
+                <!--  Monitors     -->
+
+                <!--  Actions   -->
+                <ChatCommands/>
+
+                
+                <CameraCommands/>
+
+                
+                <NearbySmeltCommands/>
+
+                
+                <SimpleCraftCommands/>
+
+                
+                <NearbyCraftCommands/>
+
+                
+                <HumanLevelCommands/>
+
+                
+                <EquipCommands/>
+
+                
+                <PlaceCommands/>
+
+                
+
+                <!--  Rewards   -->
+
+                <!-- Additional Agent Handlers like quitting -->
+                
+
+                <!-- Env Monitors? -->
+            </AgentHandlers>
+        </AgentSection>
+        
+    </Mission>
+    <ExperimentUID>
+        3420f2db-186a-43b6-a00e-9de301de733b
+    </ExperimentUID>
+    <ClientRole>
+        0
+    </ClientRole>
+    <ClientAgentConnection>
+        <ClientIPAddress>127.0.0.1</ClientIPAddress>
+        <ClientMissionControlPort>0</ClientMissionControlPort>
+        <ClientCommandsPort>0</ClientCommandsPort>
+        <AgentIPAddress>127.0.0.1</AgentIPAddress>
+        <AgentMissionControlPort>0</AgentMissionControlPort>
+        <AgentVideoPort>0</AgentVideoPort>
+        <AgentDepthPort>0</AgentDepthPort>
+        <AgentLuminancePort>0</AgentLuminancePort>
+        <AgentObservationsPort>0</AgentObservationsPort>
+        <AgentRewardsPort>0</AgentRewardsPort>
+        <AgentColourMapPort>0</AgentColourMapPort>
+    </ClientAgentConnection>
+</MissionInit>
+[14:08:59] [Realms Notification Availability checker #1/INFO]: Could not authorize you against Realms server: java.lang.RuntimeException: Failed to parse into SignedJWT: FML
+[14:08:59] [EnvServerSocketHandler/INFO]: [STDOUT]: REPLYING WITH: MALMOOK
+[14:09:00] [Client thread/INFO]: [STDOUT]: Mission received: HarvestMeta
+[14:09:00] [Client thread/INFO]: [STDOUT]: CLIENT request state: CREATING_HANDLERS
+[14:09:00] [Client thread/INFO]: [STDOUT]: CLIENT enter state: CREATING_HANDLERS
+[14:09:00] [Client thread/INFO]: [STDOUT]: Starting command server.
+[14:09:00] [Thread-10/INFO]: [STDOUT]: INFO: ->com(0) Listening for messages on port 10158
+[14:09:00] [Client thread/INFO]: [STDOUT]: CLIENT request state: EVALUATING_WORLD_REQUIREMENTS
+[14:09:00] [Client thread/INFO]: [STDOUT]: CLIENT enter state: EVALUATING_WORLD_REQUIREMENTS
+[14:09:00] [Client thread/INFO]: [STDOUT]: CLIENT request state: CREATING_NEW_WORLD
+[14:09:00] [Client thread/INFO]: [STDOUT]: CLIENT enter state: CREATING_NEW_WORLD
+[14:09:00] [Client thread/INFO]: [STDOUT]: [LOGTOPY] GENERATOR OPTIONS = {}
+[14:09:00] [Client thread/INFO]: Mixing MixinWorldProviderSpawn from mixins.overclocking.malmomod.json into net.minecraft.world.WorldProvider
+[14:09:00] [Server thread/INFO]: Starting integrated minecraft server version 1.11.2
+[14:09:00] [Server thread/INFO]: Generating keypair
+[14:09:02] [Server thread/INFO]: Injecting existing block and item data into this server instance
+[14:09:02] [Server thread/INFO]: Applying holder lookups
+[14:09:02] [Server thread/INFO]: Holder lookups applied
+[14:09:02] [Server thread/INFO]: Loading dimension 0 (TEMP_0_e1fc17b7-efae-42e1-9c69-9031eb66901b) (net.minecraft.server.integrated.IntegratedServer@64b0f866)
+[14:09:03] [Server thread/INFO]: Loading dimension 1 (TEMP_0_e1fc17b7-efae-42e1-9c69-9031eb66901b) (net.minecraft.server.integrated.IntegratedServer@64b0f866)
+[14:09:03] [Server thread/INFO]: Loading dimension -1 (TEMP_0_e1fc17b7-efae-42e1-9c69-9031eb66901b) (net.minecraft.server.integrated.IntegratedServer@64b0f866)
+[14:09:03] [Server thread/INFO]: Preparing start region for level 0
+[14:09:04] [Server thread/INFO]: Preparing spawn area: 9%
+[14:09:05] [Server thread/INFO]: Preparing spawn area: 16%
+[14:09:06] [Server thread/INFO]: Preparing spawn area: 29%
+[14:09:07] [Server thread/INFO]: Preparing spawn area: 47%
+[14:09:08] [Server thread/INFO]: Preparing spawn area: 63%
+[14:09:09] [Server thread/INFO]: Preparing spawn area: 82%
+[14:09:10] [Server thread/INFO]: Changing view distance to 4, from 10
+[14:09:11] [Netty Local Client IO #0/INFO]: [STDOUT]: Transformed Name: net.minecraft.client.entity.EntityOtherPlayerMP
+[14:09:11] [Netty Local Client IO #0/INFO]: [STDOUT]: MALMO: Found EntityOtherPlayerMP, attempting to transform it
+[14:09:11] [Server thread/INFO]: [STDOUT]: SERVER request state: WAITING_FOR_MOD_READY
+[14:09:11] [Server thread/INFO]: [STDOUT]: CLIENT request state: WAITING_FOR_SERVER_READY
+[14:09:11] [Server thread/INFO]: [STDOUT]: SERVER enter state: WAITING_FOR_MOD_READY
+[14:09:11] [Netty Local Client IO #0/INFO]: Server protocol version 2
+[14:09:11] [Netty Server IO #1/INFO]: Client protocol version 2
+[14:09:11] [Netty Server IO #1/INFO]: Client attempting to join with 5 mods : minecraft@1.11.2,FML@8.0.99.99,malmomod@0.37.0,forge@13.20.1.2588,mcp@9.19
+[14:09:11] [Client thread/INFO]: [STDOUT]: CLIENT enter state: WAITING_FOR_SERVER_READY
+[14:09:11] [Netty Local Client IO #0/INFO]: [Netty Local Client IO #0] Client side modded connection established
+[14:09:11] [Server thread/INFO]: [Server thread] Server side modded connection established
+[14:09:11] [Server thread/INFO]: MineDojoAgent0[local:E:fdc2ec04] logged in with entity id 445 at (206.5, 74.0, 238.5)
+[14:09:11] [Server thread/INFO]: MineDojoAgent0 joined the game
+[14:09:11] [Server thread/INFO]: [STDOUT]: SERVER request state: DORMANT
+[14:09:11] [Server thread/INFO]: [STDOUT]: SERVER enter state: DORMANT
+[14:09:11] [Server thread/INFO]: [STDOUT]: INCOMING MISSION: Received MissionInit directly through ServerStateMachine constructor.
+[14:09:11] [Server thread/INFO]: [STDOUT]: Mission received: HarvestMeta
+[14:09:11] [Server thread/INFO]: Received mission: §9HarvestMeta
+[14:09:11] [Server thread/INFO]: Source: §alocalhost
+[14:09:11] [Server thread/INFO]: [STDOUT]: SERVER request state: BUILDING_WORLD
+[14:09:11] [Server thread/INFO]: [STDOUT]: SERVER enter state: BUILDING_WORLD
+[14:09:11] [Server thread/INFO]: [STDOUT]: SERVER request state: WAITING_FOR_AGENTS_TO_ASSEMBLE
+[14:09:12] [Client thread/INFO]: [STDOUT]: ***Telling server we are ready - MineDojoAgent0
+[14:09:12] [Client thread/INFO]: Mixing MixinRandomSkinTexture from mixins.overclocking.malmomod.json into net.minecraft.client.resources.DefaultPlayerSkin
+[14:09:12] [Client thread/INFO]: [CHAT] Received mission: §9HarvestMeta
+[14:09:12] [Client thread/INFO]: [CHAT] Source: §alocalhost
+[14:09:12] [Server thread/INFO]: [STDOUT]: SERVER enter state: WAITING_FOR_AGENTS_TO_ASSEMBLE
+[14:09:12] [Server thread/INFO]: [STDOUT]: Experiment requires: 
+[14:09:12] [Server thread/INFO]: [STDOUT]: >>>> MineDojoAgent0
+[14:09:12] [Client thread/INFO]: [STDOUT]: ***Telling server we are ready - MineDojoAgent0
+[14:09:12] [Server thread/INFO]: [STDOUT]: Initializing player with username MineDojoAgent0 and agentname MineDojoAgent0
+[14:09:13] [Client thread/INFO]: [STDOUT]: CLIENT request state: RUNNING
+[14:09:13] [Client thread/INFO]: [STDOUT]: CLIENT enter state: RUNNING
+[14:09:13] [Client thread/INFO]: [STDOUT]: [LOGTOPY] On Mac OSX Catalina make sure to install this OpenJDK 1.8.0_152-release-1056-b12, this prevents the NSDragRegions crash
+[14:09:13] [Server thread/INFO]: [STDOUT]: SERVER request state: RUNNING
+[14:09:13] [Client thread/INFO]: [STDOUT]: Resized the window
+[14:09:13] [Client thread/INFO]: [STDOUT]: Unpausing
+[14:09:13] [Server thread/INFO]: [STDOUT]: SERVER enter state: RUNNING
+[14:09:15] [Server thread/INFO]: [MineDojoAgent0: Object successfully summoned]
+[14:09:17] [Client thread/INFO]: [STDOUT]: Pressed 17
+[14:09:17] [Server thread/INFO]: [STDOUT]: Warning: managed 3/20 ticks this second.
+[14:09:17] [Client thread/INFO]: [CHAT] Object successfully summoned
+[14:09:18] [Server thread/INFO]: [STDOUT]: Warning: managed 4/20 ticks this second.
+[14:09:19] [Server thread/INFO]: [STDOUT]: Warning: managed 4/20 ticks this second.
+[14:09:20] [Server thread/INFO]: [STDOUT]: Warning: managed 4/20 ticks this second.
+[14:09:22] [Server thread/INFO]: [STDOUT]: Warning: managed 4/20 ticks this second.
+[14:09:23] [Client thread/INFO]: [STDOUT]: Released 17
+[14:09:23] [Server thread/INFO]: [STDOUT]: Warning: managed 4/20 ticks this second.
+[14:09:24] [Server thread/INFO]: [STDOUT]: Warning: managed 4/20 ticks this second.
+[14:09:24] [Client thread/INFO]: [STDOUT]: Pressed 17
+[14:09:24] [Client thread/INFO]: [STDOUT]: Pressed 57
+[14:09:25] [Server thread/INFO]: [STDOUT]: Warning: managed 4/20 ticks this second.
+[14:09:26] [Server thread/INFO]: [STDOUT]: Warning: managed 4/20 ticks this second.
+[14:09:27] [Server thread/INFO]: [STDOUT]: Warning: managed 4/20 ticks this second.
+[14:09:28] [Client thread/INFO]: [STDOUT]: Released 17
+[14:09:28] [Client thread/INFO]: [STDOUT]: Pressed 30
+[14:09:28] [Client thread/INFO]: [STDOUT]: Released 57
+[14:09:28] [Server thread/INFO]: [STDOUT]: Warning: managed 4/20 ticks this second.
+[14:09:29] [Server thread/INFO]: [STDOUT]: Warning: managed 4/20 ticks this second.
+[14:09:31] [Client thread/INFO]: [STDOUT]: Pressed 31
+[14:09:31] [Client thread/INFO]: [STDOUT]: Released 30
+[14:09:31] [Server thread/INFO]: [STDOUT]: Warning: managed 4/20 ticks this second.
+[14:09:32] [Server thread/INFO]: [STDOUT]: Warning: managed 4/20 ticks this second.
+[14:09:33] [Server thread/INFO]: [STDOUT]: Warning: managed 4/20 ticks this second.
+[14:09:37] [Server thread/INFO]: [STDOUT]: Warning: managed 2/20 ticks this second.

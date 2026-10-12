@@ -1,0 +1,2 @@
+2026-10-12 14:10:18 MC4YWRFXX0-ML watchdog[67089] INFO Watchdog started between parent 67074 and child 67075
+2026-10-12 14:11:57 MC4YWRFXX0-ML watchdog[67089] INFO Parent is not running, hence we need terminate the child.
